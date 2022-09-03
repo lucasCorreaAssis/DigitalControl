@@ -33,7 +33,12 @@ dynamics_parameters = dynamics.getDynamicsParameters();
 %% Ziegler Nichols
 
 zn = ZieglerNichols(dynamics_parameters);
-zn_parameters = zn.getPIDParameters();
+controller_parameters = zn.getPIDParameters();
+
+%% CC
+
+cc = CCTunning(dynamics_parameters);
+controller_parameters = cc.getPIDParameters();
 
 %% Controlador ZN
 
@@ -55,9 +60,9 @@ zn_parameters = zn.getPIDParameters();
 % Td: Tempo derivador
 
 % Como estamos projetando um controlador PI, logo:
-PROPORTIONAL_GAIN = zn_parameters.Kp;
-INTEGRAL_GAIN = zn_parameters.Kp / zn_parameters.Ti;
-DERIVATIVE_GAIN = 0;
+PROPORTIONAL_GAIN = controller_parameters.Kp;
+INTEGRAL_GAIN = controller_parameters.Kp / controller_parameters.Ti;
+DERIVATIVE_GAIN = controller_parameters.Kp * controller_parameters.Td;
 
 %% Rodando a Simulação
 
@@ -71,7 +76,7 @@ sim('CustomBaseControl');
 figure(2);
 % A classe SimulationVisualizer possui métodos para plotar 
 % os dados da simulação.
-sgtitle('ZN Tunning')
+sgtitle('Controller Tunning')
 %% Saída: y(t)
 
 subplot(311);
@@ -102,10 +107,9 @@ tempo_simulacao = 0:0.01:20;
 for i = 1:size(tempo_simulacao, 2)
     ITAE = ITAE + abs(Rt(i)-Yt(i)) * tempo_simulacao(i);
 end
-%%
 
 TV = sum(abs(diff(Ut)));
 
-disp('Para o método de ZN, obteve-se:')
+disp('Para o método, obteve-se:')
 fprintf('IAE: %f   ITAE: %f  TV: %f\n', IAE, ITAE, TV);
 
