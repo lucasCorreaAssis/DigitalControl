@@ -1,5 +1,5 @@
 %% Importando biblioteca para controle de processos.
-addpath 'C:\TFS\Controladores Digitais\ProcessosIndustriais\src'
+addpath '..\ProcessosIndustriais\src'
 
 %% Definindo o processo e resposta em malha aberta
 num = 2;
@@ -30,15 +30,33 @@ tempo = 0:0.1:30;
 dynamics = ProcessDynamics(processo, tempo);
 dynamics_parameters = dynamics.getDynamicsParameters();
 
-%% Ziegler Nichols
+%%Modelo de controladores
+%% Tunning
 
-zn = ZieglerNichols(dynamics_parameters);
-controller_parameters = zn.getPIDParameters();
+tunning_method = 'CHRSR';
 
-%% CC
+switch tunning_method
+    case 'ZN'
+        tunning = ZieglerNichols(dynamics_parameters);
+    case 'CC'
+        tunning = CCTunning(dynamics_parameters);
+    case 'ITAERT'
+        tunning = ITAERTunning(dynamics_parameters);
+    case 'CHRRT'
+        tunning = CHRRTunning(dynamics_parameters);
+    case 'CHR20'
+        tunning = CHR20Tunning(dynamics_parameters);
+    case 'IAER'
+        tunning = IAERTunning(dynamics_parameters);
+    case 'IAESR'
+        tunning = IAESRTunning(dynamics_parameters);
+    case 'ITAEST'
+        tunning = ITAESTunning(dynamics_parameters);
+    case 'CHRSR'
+        tunning = CHRSRTunning(dynamics_parameters);
+end
 
-cc = CCTunning(dynamics_parameters);
-controller_parameters = cc.getPIDParameters();
+controller_parameters = tunning.getPIDParameters();
 
 %% Controlador ZN
 
@@ -59,7 +77,7 @@ controller_parameters = cc.getPIDParameters();
 % Ti: Tempo integrador
 % Td: Tempo derivador
 
-% Como estamos projetando um controlador PI, logo:
+% Como estamos projetando um controlador PID, logo:
 PROPORTIONAL_GAIN = controller_parameters.Kp;
 INTEGRAL_GAIN = controller_parameters.Kp / controller_parameters.Ti;
 DERIVATIVE_GAIN = controller_parameters.Kp * controller_parameters.Td;
@@ -76,7 +94,8 @@ sim('CustomBaseControl');
 figure(2);
 % A classe SimulationVisualizer possui métodos para plotar 
 % os dados da simulação.
-sgtitle('Controller Tunning')
+graph_title = strcat(tunning_method,' controller Tunning');
+sgtitle(graph_title)
 %% Saída: y(t)
 
 subplot(311);
@@ -87,7 +106,6 @@ SimulationVisualizer.plotOutput(Reference, OutputRead);
 subplot(312);
 SimulationVisualizer.plotControlSignal(Input);
 fprintf('O valor máximo do sinal de controle é %f\n', max(Input(:,2)));
-
 
 %% Error: e(t)
 
