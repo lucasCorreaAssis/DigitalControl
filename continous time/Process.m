@@ -78,9 +78,9 @@ controller_parameters = tunning.getPIDParameters();
 % Td: Tempo derivador
 
 % Como estamos projetando um controlador PID, logo:
-PROPORTIONAL_GAIN = controller_parameters.Kp;
-INTEGRAL_GAIN = controller_parameters.Kp / controller_parameters.Ti;
-DERIVATIVE_GAIN = controller_parameters.Kp * controller_parameters.Td;
+PROPORTIONAL_GAIN = controller_parameters.Kp
+INTEGRAL_GAIN = controller_parameters.Kp / controller_parameters.Ti
+DERIVATIVE_GAIN = controller_parameters.Kp * controller_parameters.Td
 
 %% Rodando a Simulação
 
@@ -98,7 +98,6 @@ graph_title = strcat(tunning_method,' controller Tunning');
 sgtitle(graph_title)
 %% Saída: y(t)
 
-subplot(311);
 SimulationVisualizer.plotOutput(Reference, OutputRead);
 
 %% Sinal de Controle: u(t)

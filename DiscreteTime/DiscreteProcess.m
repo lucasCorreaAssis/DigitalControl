@@ -44,7 +44,7 @@ dynamics_parameters = dynamics.getDynamicsParameters();
 
 %% Tunning
 
-tunning_method = 'ITAEST';
+tunning_method = 'CHRSR';
 
 switch tunning_method
     case 'ZN'
@@ -150,7 +150,7 @@ input_noise_time = 10;
 
 %% Rodando a Simulação Discreta com disturbio na entrada
 
-sim('DiscreteBaseControl');
+%sim('DiscreteBaseControl');
 figure(3);
 SimulationVisualizer.plotDiscreteOutput(DiscreteReference, DiscreteOutputRead);
 
@@ -174,8 +174,9 @@ sim('DiscreteBaseControl');
 %% Sinal de controle e ruido
 
 figure(5);
-subplot(211);
+%subplot(211);
 SimulationVisualizer.plotDiscreteControlSignal(DiscreteInput);
+%%
 subplot(212);
 plot(tempo,ruido, 'r');
 xlabel('Time [s]');
