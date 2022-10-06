@@ -2,7 +2,7 @@ clear all
 syms s z r s0 s1 s2
 
 dt = 0.1;
-tempo = 0:dt:30;
+
 
 %processo
 Hs = tf([2], [1 2 1]);
@@ -80,6 +80,57 @@ coeff_R = sym2poly(R(z))
 coeff_T = sym2poly(T(z))
 coeff_S = sym2poly(S(z))
 
+%% Controlador
+
+% Plota o controlador melhorado
+sim('DiscreteControlRTS'); % Simula no Simulink
+
+tempo=reference(:,1)
+referencia=reference(:,2);
+saida=output(:,2);
+controle=control(:,2);
+
+IAE = round( sum(abs(referencia-saida)) , 2) % Calcula IAE - Integral Absolute Error
+ITAE = round( sum(tempo.*abs(referencia-saida)) , 2) % Calcula ITAE - Integral Time Absolute Error
+figure(1)
+stairs(tempo, referencia,'r','linewidth',2); ; % Referência
+xlabel('Tempo (s)');
+ylabel('Amplitude');
+legend('Referência')
+title('Resposta Controlador RTS - LRR')
+grid on;
+
+figure(2)
+stairs(tempo, controle,'b','linewidth',1);  % Sinal de controle
+xlabel('Tempo (s)');
+ylabel('Amplitude');
+legend('Sinal de controle')
+title('Resposta Controlador RTS - LRR')
+grid on;
+
+
+figure(3)
+stairs(tempo, saida,'g','linewidth',1); ; % Processo com controlador projetado
+xlabel('Tempo (s)');
+ylabel('Amplitude');
+legend('Saida')
+title('Resposta Controlador RTS - LRR')
+grid on;
+disp('Sobressinal máximo (%):')
+disp((max(saida)-1)*100)
+
+t1 = 0; t2 = 0;
+for i = 1:length(saida)
+       if saida(i) > 0.0999 && t1 == 0
+           t1 = tempo(i);
+       end
+       if saida(i) > 0.9
+           t2 = tempo(i);
+           break
+       end
+end
+disp('Tempo de subida (10% até 90%) em segundos:')
+disp(t2 - t1)
 
 
 
