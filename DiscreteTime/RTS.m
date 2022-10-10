@@ -10,7 +10,7 @@ Hs = tf([2], [1 2 1]);
 Hz = c2d(Hs, dt)
 
 %definindo A e B
-[Bz, Az] = tfdata(Hz, 'v'); %tf em vetor
+[Bz, Az] = tfdata(Hz, 'v') %tf em vetor
 
 %% MÉTODO PAR DE POLOS DOMINANTES
 Mp = 0.05; % Sobressinal máximo 0.1 -> 5%
@@ -43,8 +43,7 @@ polo2 = -raizes(4) % Raíz 2
 A(z) = poly2sym(Az, z)
 B(z) = poly2sym(Bz, z)
 
-%Ao(z) = z^2;
-Ao(z) = (z + 1.5)^2; %verificar Ao(z)
+Ao(z) = z^2;
 
 z1 = exp(dt*polo_s1)
 z2 = exp(dt*polo_s2)
