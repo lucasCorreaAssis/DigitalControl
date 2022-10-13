@@ -82,7 +82,7 @@ stairs(tempo, referencia,'r','linewidth',2); ; % Referência
 xlabel('Tempo (s)');
 ylabel('Amplitude');
 legend('Referência')
-title('Resposta Controlador RTS - LRR')
+title('Resposta Controlador RTS - Par de polos')
 grid on;
 
 figure(2)
@@ -90,7 +90,7 @@ stairs(tempo, controle,'b','linewidth',1);  % Sinal de controle
 xlabel('Tempo (s)');
 ylabel('Amplitude');
 legend('Sinal de controle')
-title('Resposta Controlador RTS - LRR')
+title('Resposta Controlador RTS - Par de polos')
 grid on;
 
 
@@ -99,7 +99,7 @@ stairs(tempo, saida,'g','linewidth',1); ; % Processo com controlador projetado
 xlabel('Tempo (s)');
 ylabel('Amplitude');
 legend('Saida')
-title('Resposta Controlador RTS - LRR')
+title('Resposta Controlador RTS - Par de polos')
 grid on;
 disp('Sobressinal máximo (%):')
 disp((max(saida)-1)*100)
@@ -140,19 +140,15 @@ Hz = c2d(Hs, dt)
 ro = 100;
 
 %mudar implementação
-%Hz = poly2sym(Bz, z)/poly2sym(Az, z)
-%eq = 1 + 1/ro*Hz*(1/Hz)
-%raizes = roots(sym2poly(eq))
-%polo1 = raizes(3)
-%polo2 = raizes(4)
-
-
 num = poly2sym(Bz, z)*poly2sym(flip(Bz), z);
 den = ro*poly2sym(Az, z)*poly2sym(flip(Az), z);
 eq = num + den;
-raizes = roots(sym2poly(eq));
-polo1 = -raizes(3) % Raíz 1
-polo2 = -raizes(4) % Raíz 2
+
+
+raizes = roots(sym2poly(eq))
+
+polo1 = -raizes(1) % Raíz 1
+polo2 = -raizes(2) % Raíz 2
 
 
 %% Acz
@@ -164,35 +160,36 @@ Ao(z) = z^2;
 z1 = exp(dt*polo1)
 z2 = exp(dt*polo2)
 
-Ac(z) = expand((z-z1)*(z-z2))
 
+
+Ac(z) = expand((z-z1)*(z-z2))
 
 %% RTS
 R(z) = (z-1)*(z+r);
-%R(z) = z+r
 S(z) = s0*z^2 + s1*z + s2
-%S(z) = s0*z + s1
+
 
 polinomio_esq = expand(A(z)*R(z) + B(z)*S(z))
 polinomio_dir = expand(Ac(z)*Ao(z))
 
 C = coeffs(polinomio_esq - polinomio_dir, z); % Matriz de coeficientes resultantes
-
 eq1 = C(1) == 0;
 eq2 = C(2) == 0;
 eq3 = C(3) == 0;
 eq4 = C(4) == 0;
 
+
 [r, s0, s1, s2] = solve([eq1, eq2, eq3, eq4], [r, s0, s1, s2]);
 
-R(z) = (z-1)*(z+r);
-S(z) = s0*z^2 + s1*z + s2;
-to = Ac(1)/B(1);
-T(z) = to*Ao(z);
 
-coeff_R = sym2poly(R(z))
-coeff_T = sym2poly(T(z))
-coeff_S = sym2poly(S(z))
+Rz = (z-1)*(z+r);
+Sz = s0*z^2 + s1*z + s2;
+to = Ac(1)/B(1);
+Tz = to*Ao(z);
+
+coeff_R = sym2poly(Rz)
+coeff_T = sym2poly(Tz)
+coeff_S = sym2poly(Sz)
 %% Controlador
 
 % Plota o controlador melhorado
@@ -244,7 +241,5 @@ for i = 1:length(saida)
 end
 disp('Tempo de subida (10% até 90%) em segundos:')
 disp(t2 - t1)
-
-
 
 
