@@ -1,5 +1,5 @@
 % at 1
-
+%Completa, referente a questão numero 1
 T = 0.1;
 
 Hs = tf([2],[1 2 1]);
