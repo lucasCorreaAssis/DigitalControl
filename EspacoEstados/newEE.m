@@ -72,7 +72,7 @@ y = zeros(1,N);
 v = [zeros(1,250),ones(1,N-250)];
 %=zeros(1,N);
 for k=1:N
-    x(:,k+1) = Amf*x(:,k) + Bmf*(x(k));
+    x(:,k+1) = Amf*x(:,k) + Bmf*(u(k));
     u(:,k) = -Kmf*x(k) + Kc*w(k);
     xz(:, k+1) = Amf*xz(:,k) + Bmf*u(k) + Lmf*( y(k)-Cmf*xz(:,k) );
     y(k) = [C 0 0]*x(:,k) + D*u(k);
@@ -92,7 +92,6 @@ figure(3)
 plot(v,y)
 title('Sinal de entrada')
 legend('Referência')
-
 
 
 

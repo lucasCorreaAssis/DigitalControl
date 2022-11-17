@@ -98,5 +98,8 @@ xlabel('Iterações');
 ylabel('Saída');
 legend('Sistema em EE')
 
+figure(7)
+plot(v,y)
+figure(8)
 
 
